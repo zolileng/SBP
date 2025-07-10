@@ -9,7 +9,7 @@ let Players = [];
 
 // Load players from Supabase
 async function loadPlayers() {
-  const { data, error } = await supabase.from("Players").select("*");
+  const { data, error } = await supabase.from("players").select("*");
   if (error) {
     console.error("❌ Failed to load players:", error.message);
     return;
