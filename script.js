@@ -9,7 +9,7 @@ let players = [];
 
 // Load players from Supabase
 async function loadPlayers() {
-  const { data, error } = await supabase.from("players").select("*");
+  const { data, error } = await supabase.from("Players").select("*");
   if (error) {
     console.error("❌ Failed to load players:", error.message);
     return;
@@ -31,10 +31,10 @@ function loadLeaderboard() {
   players.sort((a, b) => calculatePoints(b) - calculatePoints(a));
 
   players.forEach(player => {
-    const gamesPlayed = player.wins + player.losses + player.draws;
+    const gamesPlayed = Player.wins + Player.losses + Player.draws;
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td class="team-name" data-team="${player.name}">${player.name}</td>
+      <td class="team-name" data-team="${Player.name}">${Player.name}</td>
       <td>${player.wins}</td>
       <td>${player.losses}</td>
       <td>${player.draws}</td>
@@ -51,7 +51,7 @@ function loadLeaderboard() {
 
 // Show loss history
 function showLosses(event) {
-  const player = players.find(p => p.name === event.target.dataset.team);
+  const player = Players.find(p => p.name === event.target.dataset.team);
   const container = document.getElementById("losses-display");
   let html = `<h3>${player.name}'s Losses</h3>`;
   const losses = Object.entries(player.lossesHistory || {}).filter(([_, count]) => count > 0);
