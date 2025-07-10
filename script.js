@@ -5,7 +5,7 @@ const supabaseUrl = "https://quvjivpaggshwekscbmy.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1dmppdnBhZ2dzaHdla3NjYm15Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjgwOTMsImV4cCI6MjA2Nzc0NDA5M30.nCEPyMpbrEVEuoG7kMBIAiKZ5BEWrPIiVigANHAm7kM";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-let players = [];
+let Players = [];
 
 // Load players from Supabase
 async function loadPlayers() {
@@ -14,7 +14,7 @@ async function loadPlayers() {
     console.error("❌ Failed to load players:", error.message);
     return;
   }
-  players = data;
+  Players = data;
   loadLeaderboard();
 }
 
@@ -28,13 +28,13 @@ function loadLeaderboard() {
   const tbody = document.querySelector("#leaderboard tbody");
   tbody.innerHTML = "";
 
-  players.sort((a, b) => calculatePoints(b) - calculatePoints(a));
+  Players.sort((a, b) => calculatePoints(b) - calculatePoints(a));
 
-  players.forEach(player => {
-    const gamesPlayed = Player.wins + Player.losses + Player.draws;
+  Players.forEach(player => {
+    const gamesPlayed = player.wins + player.losses + player.draws;
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td class="team-name" data-team="${Player.name}">${Player.name}</td>
+      <td class="team-name" data-team="${player.name}">${player.name}</td>
       <td>${player.wins}</td>
       <td>${player.losses}</td>
       <td>${player.draws}</td>
@@ -75,50 +75,5 @@ async function updateMatchFromInput(event) {
   const p2name = document.getElementById("input2").value.trim();
   const result = document.getElementById("input3").value;
 
-  const p1 = players.find(p => p.name.toLowerCase() === p1name.toLowerCase());
-  const p2 = players.find(p => p.name.toLowerCase() === p2name.toLowerCase());
-
-  if (!p1 || !p2 || p1.id === p2.id) {
-    alert("Invalid player names.");
-    return;
-  }
-
-  if (result === "draw") {
-    p1.draws++; p2.draws++;
-  } else if (result === "player1") {
-    p1.wins++; p2.losses++;
-    p2.lossesHistory[p1.name] = (p2.lossesHistory[p1.name] || 0) + 1;
-  } else if (result === "player2") {
-    p2.wins++; p1.losses++;
-    p1.lossesHistory[p2.name] = (p1.lossesHistory[p2.name] || 0) + 1;
-  } else {
-    alert("Invalid result.");
-    return;
-  }
-
-  // Update both players in Supabase
-  await Promise.all([
-    supabase.from("players").update({
-      wins: p1.wins,
-      losses: p1.losses,
-      draws: p1.draws,
-      lossesHistory: p1.lossesHistory
-    }).eq("id", p1.id),
-    supabase.from("players").update({
-      wins: p2.wins,
-      losses: p2.losses,
-      draws: p2.draws,
-      lossesHistory: p2.lossesHistory
-    }).eq("id", p2.id)
-  ]);
-
-  await loadPlayers();
-  document.getElementById("match-update-form").reset();
-}
-
-// Initial load
-window.onload = () => {
-  loadPlayers();
-};
-
-document.getElementById("match-update-form").addEventListener("submit", updateMatchFromInput);
+  const p1 = Players.find(p => p.name.toLowerCase() === p1name.toLowerCase());
+  const p2 = Players.find(p => p.name.toLowerCase() === p2name.toLowerCase(
