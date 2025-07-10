@@ -77,3 +77,4 @@ async function updateMatchFromInput(event) {
 
   const p1 = Players.find(p => p.name.toLowerCase() === p1name.toLowerCase());
   const p2 = Players.find(p => p.name.toLowerCase() === p2name.toLowerCase());
+}
